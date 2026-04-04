@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 from anthropic import AsyncAnthropic
 
 
 @pytest.fixture
-def mock_anthropic() -> AsyncAnthropic:
+def mock_anthropic() -> MagicMock:
     return MagicMock(spec=AsyncAnthropic)
 
 
