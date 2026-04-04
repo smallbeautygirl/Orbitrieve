@@ -209,3 +209,10 @@ __marimo__/
 
 # Claude Code
 .claude.md
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Claude Code settings
+.claude/settings.json
