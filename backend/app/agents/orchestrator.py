@@ -6,8 +6,9 @@ import logging
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
+from app.core.config import settings
 from app.core.exceptions import AgentError
 from app.models.chat import ChatMessage
 from app.prompts.orchestrator import DIRECT_ANSWER_SYSTEM, ROUTE_TOOL, SYSTEM_PROMPT
@@ -22,39 +23,34 @@ class RouteDecision:
 
 
 class OrchestratorAgent:
-    def __init__(self, client: AsyncAnthropic) -> None:
+    def __init__(self, client: AsyncOpenAI) -> None:
         self._client = client
 
     async def decide(self, message: str, history: list[ChatMessage]) -> RouteDecision:
         messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
             *[{"role": m.role, "content": m.content} for m in history],
             {"role": "user", "content": message},
         ]
         try:
-            response = await self._client.messages.create(
-                model="claude-sonnet-4-6",
+            response = await self._client.chat.completions.create(
+                model=settings.llm_model,
                 max_tokens=256,
-                system=SYSTEM_PROMPT,
                 tools=[ROUTE_TOOL],
-                tool_choice={"type": "any"},
+                tool_choice={"type": "function", "function": {"name": "route_decision"}},
                 messages=messages,
             )
         except Exception as e:
             raise AgentError("Orchestrator failed to classify intent") from e
 
-        for block in response.content:
-            if block.type == "tool_use" and block.name == "route_decision":
-                logger.info(
-                    "Routing decision",
-                    extra={
-                        "needs_search": block.input["needs_search"],
-                        "reason": block.input["reason"],
-                    },
-                )
-                return RouteDecision(
-                    needs_search=block.input["needs_search"],
-                    reason=block.input["reason"],
-                )
+        tool_calls = response.choices[0].message.tool_calls
+        if tool_calls and tool_calls[0].function.name == "route_decision":
+            args = json.loads(tool_calls[0].function.arguments)
+            logger.info(
+                "Routing decision",
+                extra={"needs_search": args["needs_search"], "reason": args["reason"]},
+            )
+            return RouteDecision(needs_search=args["needs_search"], reason=args["reason"])
 
         raise AgentError("Orchestrator did not call route_decision tool")
 
@@ -62,17 +58,20 @@ class OrchestratorAgent:
         self, message: str, history: list[ChatMessage]
     ) -> AsyncGenerator[str, None]:
         messages = [
+            {"role": "system", "content": DIRECT_ANSWER_SYSTEM},
             *[{"role": m.role, "content": m.content} for m in history],
             {"role": "user", "content": message},
         ]
         try:
-            async with self._client.messages.stream(
-                model="claude-sonnet-4-6",
+            stream = await self._client.chat.completions.create(
+                model=settings.llm_model,
                 max_tokens=1024,
-                system=DIRECT_ANSWER_SYSTEM,
                 messages=messages,
-            ) as stream:
-                async for text in stream.text_stream:
+                stream=True,
+            )
+            async for chunk in stream:
+                text = chunk.choices[0].delta.content
+                if text:
                     yield json.dumps({"type": "token", "content": text})
         except Exception as e:
             raise AgentError("Orchestrator direct answer failed") from e

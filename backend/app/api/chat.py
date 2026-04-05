@@ -6,7 +6,7 @@ import logging
 import time
 from collections.abc import AsyncGenerator
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from redis.asyncio import Redis
@@ -22,7 +22,11 @@ from app.services.tavily import TavilyService
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-_anthropic_client = AsyncAnthropic(api_key=settings.anthropic_api_key)
+_openai_client = AsyncOpenAI(
+    api_key=settings.gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    max_retries=0,
+)
 _tavily_service = TavilyService()
 
 
@@ -45,7 +49,7 @@ async def _generate_stream(request: ChatRequest) -> AsyncGenerator[str, None]:
             },
         )
 
-        orchestrator = OrchestratorAgent(client=_anthropic_client)
+        orchestrator = OrchestratorAgent(client=_openai_client)
 
         yield f"data: {json.dumps({'type': 'thinking', 'content': 'Thinking...'})}\n\n"
 
@@ -54,7 +58,7 @@ async def _generate_stream(request: ChatRequest) -> AsyncGenerator[str, None]:
         full_response: list[str] = []
 
         if decision.needs_search:
-            search_agent = SearchAgent(client=_anthropic_client, tavily=_tavily_service)
+            search_agent = SearchAgent(client=_openai_client, tavily=_tavily_service)
             async for event_str in search_agent.run(request.message, history):
                 event = json.loads(event_str)
                 if event["type"] == "token" and event.get("content"):

@@ -4,8 +4,9 @@ import json
 import logging
 from collections.abc import AsyncGenerator
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
+from app.core.config import settings
 from app.core.exceptions import AgentError
 from app.models.chat import ChatMessage
 from app.prompts.search_agent import SYSTEM_PROMPT_TEMPLATE, format_search_results
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class SearchAgent:
-    def __init__(self, client: AsyncAnthropic, tavily: TavilyService) -> None:
+    def __init__(self, client: AsyncOpenAI, tavily: TavilyService) -> None:
         self._client = client
         self._tavily = tavily
 
@@ -35,13 +36,18 @@ class SearchAgent:
         )
 
         try:
-            async with self._client.messages.stream(
-                model="claude-sonnet-4-6",
+            stream = await self._client.chat.completions.create(
+                model=settings.llm_model,
                 max_tokens=1024,
-                system=system,
-                messages=[{"role": "user", "content": message}],
-            ) as stream:
-                async for text in stream.text_stream:
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": message},
+                ],
+                stream=True,
+            )
+            async for chunk in stream:
+                text = chunk.choices[0].delta.content
+                if text:
                     yield json.dumps({"type": "token", "content": text})
         except Exception as e:
             raise AgentError("Search agent synthesis failed") from e

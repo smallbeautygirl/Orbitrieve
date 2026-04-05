@@ -1,0 +1,48 @@
+{
+  // Python
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.envFile": "${workspaceFolder}/backend/.env",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+
+  // TypeScript / React
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Editor
+  "editor.wordWrap": "on",
+  "editor.rulers": [100],
+  "editor.tabSize": 2,
+
+  // Files
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/node_modules": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true
+  },
+  "files.associations": {
+    "*.env": "dotenv"
+  },
+
+  // Search
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/__pycache__": true
+  }
+}

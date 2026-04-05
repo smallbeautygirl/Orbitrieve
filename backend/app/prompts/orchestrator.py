@@ -13,21 +13,24 @@ or historical facts
 """
 
 ROUTE_TOOL: dict = {
-    "name": "route_decision",
-    "description": "Decide whether web search is needed to answer the user's question.",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "needs_search": {
-                "type": "boolean",
-                "description": "True if web search is required.",
+    "type": "function",
+    "function": {
+        "name": "route_decision",
+        "description": "Decide whether web search is needed to answer the user's question.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "needs_search": {
+                    "type": "boolean",
+                    "description": "True if web search is required.",
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief reason for the decision.",
+                },
             },
-            "reason": {
-                "type": "string",
-                "description": "Brief reason for the decision.",
-            },
+            "required": ["needs_search", "reason"],
         },
-        "required": ["needs_search", "reason"],
     },
 }
 
