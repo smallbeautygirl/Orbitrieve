@@ -37,6 +37,9 @@ export function useChat(): { sendMessage: (message: string) => Promise<void> } {
           case 'sources':
             if (event.sources) store.setSources(assistantId, event.sources)
             break
+          case 'suggestions':
+            if (event.suggestions) store.setSuggestions(assistantId, event.suggestions)
+            break
           case 'done':
             store.finishLoading()
             break

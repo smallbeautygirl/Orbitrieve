@@ -55,4 +55,13 @@ describe('chatStore', () => {
     expect(state.isLoading).toBe(false)
     expect(state.currentStage).toBeNull()
   })
+
+  it('setSuggestions attaches suggestions to the correct message', () => {
+    const id = useChatStore.getState().startAssistantMessage();
+    useChatStore.getState().setSuggestions(id, ['What next?', 'Tell me more']);
+    expect(useChatStore.getState().messages[0].suggestions).toEqual([
+      'What next?',
+      'Tell me more',
+    ]);
+  });
 })
