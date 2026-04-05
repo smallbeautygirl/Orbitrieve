@@ -1,28 +1,29 @@
-import { useEffect, useRef } from 'react'
-import type { Message, Stage } from '../types/chat'
-import { MessageBubble } from './MessageBubble'
-import { ThinkingIndicator } from './ThinkingIndicator'
-import { theme } from '../styles/theme'
+import { useEffect, useRef } from 'react';
+import type { Message, Stage } from '../types/chat';
+import { MessageBubble } from './MessageBubble';
+import { ThinkingIndicator } from './ThinkingIndicator';
+import { theme } from '../styles/theme';
 
 interface MessageListProps {
-  messages: Message[]
-  currentStage: Stage
+  messages: Message[];
+  currentStage: Stage;
+  onSuggestionSelect: (text: string) => void;
 }
 
-export function MessageList({ messages, currentStage }: MessageListProps): JSX.Element {
-  const bottomRef = useRef<HTMLDivElement>(null)
+export function MessageList({ messages, currentStage, onSuggestionSelect }: MessageListProps): JSX.Element {
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, currentStage])
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, currentStage]);
 
   return (
     <div
       style={{
         flex: 1,
         overflowY: 'auto',
-        padding: '16px 0',
-        backgroundColor: theme.colors.surface,
+        padding: '24px 0',
+        backgroundColor: theme.colors.bg,
       }}
     >
       {messages.length === 0 && (
@@ -33,7 +34,7 @@ export function MessageList({ messages, currentStage }: MessageListProps): JSX.E
             alignItems: 'center',
             justifyContent: 'center',
             height: '100%',
-            color: theme.colors.textMuted,
+            color: theme.colors.textDim,
             fontSize: '14px',
             gap: '8px',
           }}
@@ -43,7 +44,7 @@ export function MessageList({ messages, currentStage }: MessageListProps): JSX.E
         </div>
       )}
       {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} />
+        <MessageBubble key={m.id} message={m} onSuggestionSelect={onSuggestionSelect} />
       ))}
       {currentStage && (
         <div style={{ padding: '0 30px' }}>
@@ -52,5 +53,5 @@ export function MessageList({ messages, currentStage }: MessageListProps): JSX.E
       )}
       <div ref={bottomRef} />
     </div>
-  )
+  );
 }
