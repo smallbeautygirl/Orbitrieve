@@ -1,18 +1,20 @@
-import type { Source } from '../types/chat'
-import { theme } from '../styles/theme'
+import type { Source } from '../types/chat';
+import { theme } from '../styles/theme';
 
 interface SourceCardProps {
-  source: Source
+  source: Source;
 }
 
 export function SourceCard({ source }: SourceCardProps): JSX.Element {
   const domain = (() => {
     try {
-      return new URL(source.url).hostname.replace('www.', '')
+      return new URL(source.url).hostname.replace('www.', '');
     } catch {
-      return source.url
+      return source.url;
     }
-  })()
+  })();
+
+  const meta = source.published_date ? `${domain} · Published ${source.published_date}` : domain;
 
   return (
     <a
@@ -21,47 +23,67 @@ export function SourceCard({ source }: SourceCardProps): JSX.Element {
       target="_blank"
       rel="noopener noreferrer"
       style={{
-        display: 'flex',
-        gap: '10px',
-        padding: '8px 12px',
+        display: 'block',
+        position: 'relative',
+        padding: '12px 14px',
+        background: theme.colors.bgCard,
         border: `1px solid ${theme.colors.border}`,
-        borderRadius: theme.radii.sm,
+        borderRadius: '10px',
         textDecoration: 'none',
-        color: theme.colors.textPrimary,
-        backgroundColor: theme.colors.surface,
+        color: 'inherit',
         transition: 'border-color 0.15s',
       }}
     >
+      {/* SOURCE N label */}
       <span
         style={{
-          minWidth: '22px',
-          height: '22px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: theme.colors.primaryLight,
-          borderRadius: '4px',
-          fontSize: '11px',
+          display: 'inline-block',
+          fontSize: '9px',
           fontWeight: 700,
-          flexShrink: 0,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: theme.colors.primary,
+          background: theme.colors.primaryDim,
+          padding: '2px 6px',
+          borderRadius: '4px',
+          marginBottom: '8px',
         }}
       >
-        [{source.index}]
+        Source {source.index}
       </span>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>{source.title}</div>
-        <div
-          style={{
-            fontSize: '11px',
-            color: theme.colors.textMuted,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {domain}
-        </div>
+
+      {/* External link icon */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          fontSize: '12px',
+          color: theme.colors.textDim,
+        }}
+      >
+        ↗
+      </span>
+
+      {/* Title */}
+      <div
+        style={{
+          fontSize: '13px',
+          fontWeight: 700,
+          color: theme.colors.textPrimary,
+          marginBottom: '5px',
+          paddingRight: '20px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {source.title}
       </div>
+
+      {/* Meta */}
+      <div style={{ fontSize: '11px', color: theme.colors.textDim }}>{meta}</div>
     </a>
-  )
+  );
 }
