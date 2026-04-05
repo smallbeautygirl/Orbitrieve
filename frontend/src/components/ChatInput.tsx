@@ -28,7 +28,7 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps): JSX.Element {
     <div
       style={{
         padding: '14px 20px 10px',
-        backgroundColor: '#111111',
+        backgroundColor: theme.colors.bg,
         borderTop: `1px solid ${theme.colors.borderSubtle}`,
         display: 'flex',
         flexDirection: 'column',
@@ -112,7 +112,7 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps): JSX.Element {
         style={{
           textAlign: 'center',
           fontSize: '10px',
-          color: '#444444',
+          color: theme.colors.textPlaceholder,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
           margin: 0,
