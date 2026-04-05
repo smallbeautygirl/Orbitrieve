@@ -10,13 +10,57 @@ interface MessageBubbleProps {
   onSuggestionSelect: (text: string) => void;
 }
 
-/** Extract the trailing phrase (up to 5 words) before a citation marker. */
 function extractTrailingPhrase(text: string): string {
-  // Split on sentence-ending punctuation, take the last segment
   const afterPunct = text.split(/[.,;!?]/).pop()?.trim() ?? '';
   const source = afterPunct || text.trim();
   const words = source.split(/\s+/).filter(Boolean);
-  return words.slice(-2).join(' ');
+  return words.slice(-5).join(' ');
+}
+
+function renderCitationBadge(num: number, key: string): ReactNode {
+  return (
+    <span
+      key={key}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '18px',
+        height: '18px',
+        background: theme.colors.citationBg,
+        border: `1px solid ${theme.colors.primary}`,
+        borderRadius: '50%',
+        fontSize: '10px',
+        fontWeight: 700,
+        color: theme.colors.primary,
+        marginLeft: '2px',
+        verticalAlign: 'middle',
+        position: 'relative',
+        top: '-1px',
+      }}
+    >
+      {num}
+    </span>
+  );
+}
+
+function renderHighlightedPhrase(phrase: string, prefix: string, key: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  if (prefix) nodes.push(<span key={`pre-${key}`}>{prefix}</span>);
+  nodes.push(
+    <span
+      key={`hi-${key}`}
+      style={{
+        background: theme.colors.primaryGlow,
+        color: theme.colors.primary,
+        borderRadius: '3px',
+        padding: '1px 3px',
+      }}
+    >
+      {phrase}
+    </span>,
+  );
+  return nodes;
 }
 
 function parseContent(content: string): ReactNode[] {
@@ -28,49 +72,13 @@ function parseContent(content: string): ReactNode[] {
     const citationMatch = part.match(/^\[(\d+)\]$/);
 
     if (citationMatch) {
-      result.push(
-        <span
-          key={`badge-${i}`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '18px',
-            height: '18px',
-            background: '#2a1800',
-            border: `1px solid ${theme.colors.primary}`,
-            borderRadius: '50%',
-            fontSize: '10px',
-            fontWeight: 700,
-            color: theme.colors.primary,
-            marginLeft: '2px',
-            verticalAlign: 'middle',
-            position: 'relative',
-            top: '-1px',
-          }}
-        >
-          {parseInt(citationMatch[1])}
-        </span>,
-      );
+      result.push(renderCitationBadge(parseInt(citationMatch[1]), `badge-${i}`));
     } else {
       const nextIsCitation = parts[i + 1]?.match(/^\[\d+\]$/);
       if (nextIsCitation && part.trim()) {
         const phrase = extractTrailingPhrase(part);
         const prefix = part.slice(0, part.length - phrase.length);
-        if (prefix) result.push(<span key={`pre-${i}`}>{prefix}</span>);
-        result.push(
-          <span
-            key={`hi-${i}`}
-            style={{
-              background: theme.colors.primaryGlow,
-              color: theme.colors.primary,
-              borderRadius: '3px',
-              padding: '1px 3px',
-            }}
-          >
-            {phrase}
-          </span>,
-        );
+        result.push(...renderHighlightedPhrase(phrase, prefix, `${i}`));
       } else {
         result.push(<span key={`text-${i}`}>{part}</span>);
       }

@@ -14,6 +14,7 @@ export const theme = {
     textMuted:      '#cccccc',
     textDim:        '#666666',
     textPlaceholder: '#444444',
+    citationBg:      '#2a1800',
   },
   fonts: {
     base: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',

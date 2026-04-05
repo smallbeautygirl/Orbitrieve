@@ -19,8 +19,8 @@ describe('MessageBubble', () => {
   it('renders the phrase before [1] with amber highlight', () => {
     const msg: Message = { id: '3', role: 'assistant', content: 'Apple hit record highs [1]' };
     render(<MessageBubble message={msg} onSuggestionSelect={() => {}} />);
-    // The highlighted span contains the trailing phrase
-    expect(screen.getByText('record highs')).toBeInTheDocument();
+    // The highlighted span contains up to 5 trailing words before the citation
+    expect(screen.getByText('Apple hit record highs')).toBeInTheDocument();
   });
 
   it('renders source list when assistant message has sources', () => {
