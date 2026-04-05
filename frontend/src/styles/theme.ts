@@ -15,6 +15,8 @@ export const theme = {
     textDim:        '#666666',
     textPlaceholder: '#444444',
     citationBg:      '#2a1800',
+    pillBorder:      '#2e2e2e',
+    pillText:        '#bbbbbb',
   },
   fonts: {
     base: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
