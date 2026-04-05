@@ -1,13 +1,19 @@
+// frontend/src/styles/theme.ts
 export const theme = {
   colors: {
-    primary: '#F5C518',
-    primaryLight: '#FFF8DC',
-    primaryHover: '#E6B800',
-    surface: '#FFFFFF',
-    surfaceAlt: '#F9F9F9',
-    textPrimary: '#1A1A1A',
-    textMuted: '#6B7280',
-    border: '#E5E7EB',
+    bg:             '#111111',
+    bgCard:         '#1a1a1a',
+    bgInput:        '#1a1a1a',
+    bgUserMsg:      '#1c1c1c',
+    border:         '#2a2a2a',
+    borderSubtle:   '#1e1e1e',
+    primary:        '#F5A623',
+    primaryDim:     'rgba(245,166,35,0.12)',
+    primaryGlow:    'rgba(245,166,35,0.18)',
+    textPrimary:    '#e8e8e8',
+    textMuted:      '#cccccc',
+    textDim:        '#666666',
+    textPlaceholder: '#444444',
   },
   fonts: {
     base: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -18,4 +24,4 @@ export const theme = {
     lg: '16px',
     full: '9999px',
   },
-} as const
+} as const;
