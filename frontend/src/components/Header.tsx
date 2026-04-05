@@ -1,50 +1,91 @@
-import { theme } from '../styles/theme'
-import { OrbitrieveIcon } from './OrbitrieveIcon'
+// frontend/src/components/Header.tsx
+import { OrbitrieveIcon } from './OrbitrieveIcon';
 
 interface HeaderProps {
-  onNewChat: () => void
+  onNewChat: () => void;
 }
 
-export function Header({ onNewChat }: HeaderProps): JSX.Element {
+export function Header({ onNewChat: _onNewChat }: HeaderProps): JSX.Element {
   return (
     <header
       style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '12px 20px',
-        borderBottom: `2px solid ${theme.colors.primary}`,
-        backgroundColor: theme.colors.surface,
+        padding: '14px 24px',
+        backgroundColor: '#111111',
+        borderBottom: '1px solid #2a2a2a',
+        flexShrink: 0,
       }}
     >
+      {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <OrbitrieveIcon size={28} />
+        <OrbitrieveIcon size={26} />
         <span
           style={{
-            fontSize: '18px',
+            fontSize: '17px',
             fontWeight: 700,
-            color: theme.colors.textPrimary,
-            fontFamily: theme.fonts.base,
+            color: '#F5A623',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '0.01em',
           }}
         >
           Orbitrieve
         </span>
       </div>
-      <button
-        onClick={onNewChat}
-        style={{
-          padding: '6px 14px',
-          backgroundColor: 'transparent',
-          border: `1.5px solid ${theme.colors.primary}`,
-          borderRadius: theme.radii.full,
-          fontSize: '13px',
-          fontWeight: 600,
-          cursor: 'pointer',
-          color: theme.colors.textPrimary,
-        }}
-      >
-        New Chat
-      </button>
+
+      {/* Nav tabs — visual only */}
+      <nav style={{ display: 'flex', gap: '32px' }} aria-label="Main navigation">
+        {(['Models', 'History', 'Library'] as const).map((label) => (
+          <span
+            key={label}
+            style={{
+              fontSize: '12px',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: label === 'History' ? '#F5A623' : '#666666',
+              paddingBottom: '2px',
+              borderBottom: label === 'History' ? '2px solid #F5A623' : '2px solid transparent',
+              cursor: 'default',
+              userSelect: 'none',
+            }}
+          >
+            {label}
+          </span>
+        ))}
+      </nav>
+
+      {/* Icon bar — decorative */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {[
+          { label: '⚙', title: 'Settings' },
+          { label: '?', title: 'Help' },
+          { label: '👤', title: 'Account' },
+        ].map(({ label, title }) => (
+          <div
+            key={title}
+            title={title}
+            aria-label={title}
+            style={{
+              width: '28px',
+              height: '28px',
+              background: '#1e1e1e',
+              border: '1px solid #2a2a2a',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '13px',
+              color: '#888',
+              cursor: 'default',
+              userSelect: 'none',
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
     </header>
-  )
+  );
 }
