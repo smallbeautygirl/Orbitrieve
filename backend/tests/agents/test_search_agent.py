@@ -17,20 +17,24 @@ def make_mock_sources() -> list[Source]:
     ]
 
 
-def make_mock_client_with_stream(tokens: list[str]):
-    """Create AsyncAnthropic mock that streams given tokens."""
+def make_mock_client(tokens: list[str], suggestions_text: str = "What next?\nTell me more"):
+    """Create AsyncOpenAI mock: first create() call streams tokens, second returns suggestions."""
     client = MagicMock()
 
-    async def mock_text_stream():
-        for t in tokens:
-            yield t
+    async def async_chunks():
+        for token in tokens:
+            chunk = MagicMock()
+            chunk.choices = [MagicMock()]
+            chunk.choices[0].delta.content = token
+            yield chunk
 
-    mock_stream = MagicMock()
-    mock_stream.text_stream = mock_text_stream()
-    mock_stream.__aenter__ = AsyncMock(return_value=mock_stream)
-    mock_stream.__aexit__ = AsyncMock(return_value=False)
-    client.messages = MagicMock()
-    client.messages.stream = MagicMock(return_value=mock_stream)
+    suggestion_response = MagicMock()
+    suggestion_response.choices = [MagicMock()]
+    suggestion_response.choices[0].message.content = suggestions_text
+
+    client.chat = MagicMock()
+    client.chat.completions = MagicMock()
+    client.chat.completions.create = AsyncMock(side_effect=[async_chunks(), suggestion_response])
     return client
 
 
@@ -38,7 +42,7 @@ async def test_search_agent_yields_searching_then_writing_events():
     sources = make_mock_sources()
     mock_tavily = MagicMock(spec=TavilyService)
     mock_tavily.search = AsyncMock(return_value=sources)
-    client = make_mock_client_with_stream(["Apple ", "is $213 [1]"])
+    client = make_mock_client(["Apple ", "is $213 [1]"])
     agent = SearchAgent(client=client, tavily=mock_tavily)
     events = []
     async for raw in agent.run("Apple stock?", []):
@@ -55,7 +59,7 @@ async def test_search_agent_answer_contains_citation_markers():
     sources = make_mock_sources()
     mock_tavily = MagicMock(spec=TavilyService)
     mock_tavily.search = AsyncMock(return_value=sources)
-    client = make_mock_client_with_stream(["Apple is $213 [1], up 1% [2]"])
+    client = make_mock_client(["Apple is $213 [1], up 1% [2]"])
     agent = SearchAgent(client=client, tavily=mock_tavily)
     tokens = []
     async for raw in agent.run("Apple stock?", []):
@@ -64,6 +68,25 @@ async def test_search_agent_answer_contains_citation_markers():
             tokens.append(event["content"])
     full_answer = "".join(tokens)
     assert "[1]" in full_answer
+
+
+async def test_search_agent_emits_suggestions_event():
+    sources = make_mock_sources()
+    mock_tavily = MagicMock(spec=TavilyService)
+    mock_tavily.search = AsyncMock(return_value=sources)
+    client = make_mock_client(["Apple ", "is $213 [1]"], suggestions_text="What drives AAPL?\nHow does it compare to MSFT?")
+    agent = SearchAgent(client=client, tavily=mock_tavily)
+
+    events = []
+    async for raw in agent.run("Apple stock?", []):
+        events.append(json.loads(raw))
+
+    types = [e["type"] for e in events]
+    assert "suggestions" in types
+
+    suggestions_event = next(e for e in events if e["type"] == "suggestions")
+    assert isinstance(suggestions_event["suggestions"], list)
+    assert len(suggestions_event["suggestions"]) > 0
 
 
 async def test_search_agent_raises_search_error_when_tavily_fails():

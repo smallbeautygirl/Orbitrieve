@@ -21,3 +21,4 @@ class Source(BaseModel):
     title: str
     url: str
     snippet: str
+    published_date: str | None = None
