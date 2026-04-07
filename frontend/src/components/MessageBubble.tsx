@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { Message, Source } from "../types/chat";
 import { theme } from "../styles/theme";
 import { CitationLink } from "./CitationLink";
@@ -58,7 +58,12 @@ function renderTextWithBold(text: string, keyPrefix: string): ReactNode[] {
   });
 }
 
-function parseContent(content: string, remapMap: Map<number, number>, messageId: string): ReactNode[] {
+function parseContent(
+  content: string,
+  remapMap: Map<number, number>,
+  messageId: string,
+  validDisplayIndices: Set<number>,
+): ReactNode[] {
   const parts = content.split(/(\[\d+\])/g);
   const result: ReactNode[] = [];
 
@@ -69,13 +74,60 @@ function parseContent(content: string, remapMap: Map<number, number>, messageId:
     if (citationMatch) {
       const originalIdx = parseInt(citationMatch[1]);
       const displayIdx = remapMap.get(originalIdx) ?? originalIdx;
-      result.push(<CitationLink key={`cite-${i}`} index={displayIdx} messageId={messageId} />);
+      // Only render a badge if the source card actually exists
+      if (validDisplayIndices.has(displayIdx)) {
+        result.push(<CitationLink key={`cite-${i}`} index={displayIdx} messageId={messageId} />);
+      }
     } else {
       result.push(...renderTextWithBold(part, `${i}`));
     }
   }
 
   return result;
+}
+
+function CopyButton({ text }: { text: string }): JSX.Element {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy(): void {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      title="Copy message"
+      style={{
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        padding: "4px 6px",
+        borderRadius: "6px",
+        color: copied ? theme.colors.primary : theme.colors.textMuted,
+        fontSize: "12px",
+        opacity: 0.7,
+        transition: "opacity 0.15s, color 0.15s",
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.7"; }}
+    >
+      {copied ? (
+        // Checkmark icon
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      ) : (
+        // Clipboard icon
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="2" width="6" height="4" rx="1" />
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+        </svg>
+      )}
+    </button>
+  );
 }
 
 export function MessageBubble({
@@ -94,20 +146,22 @@ export function MessageBubble({
           marginBottom: "12px",
         }}
       >
-        <div
-          style={{
-            maxWidth: "72%",
-            padding: "16px 22px",
-            borderRadius: "14px",
-            backgroundColor: theme.colors.bgUserMsg,
-            border: `1px solid ${theme.colors.border}`,
-            fontSize: "15px",
-            lineHeight: "1.55",
-            color: theme.colors.textMuted,
-            fontFamily: theme.fonts.base,
-          }}
-        >
-          {message.content}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", maxWidth: "72%" }}>
+          <div
+            style={{
+              padding: "16px 22px",
+              borderRadius: "14px",
+              backgroundColor: theme.colors.bgUserMsg,
+              border: `1px solid ${theme.colors.border}`,
+              fontSize: "15px",
+              lineHeight: "1.55",
+              color: theme.colors.textMuted,
+              fontFamily: theme.fonts.base,
+            }}
+          >
+            {message.content}
+          </div>
+          <CopyButton text={message.content} />
         </div>
       </div>
     );
@@ -117,6 +171,7 @@ export function MessageBubble({
   const displaySources = message.sources && message.sources.length > 0
     ? remapSources(message.sources, remapMap)
     : [];
+  const validDisplayIndices = new Set(displaySources.map((s) => s.index));
 
   return (
     <div
@@ -152,13 +207,18 @@ export function MessageBubble({
           fontFamily: theme.fonts.base,
         }}
       >
-        {parseContent(message.content, remapMap, message.id)}
+        {parseContent(message.content, remapMap, message.id, validDisplayIndices)}
       </div>
 
       {/* Sources */}
       {displaySources.length > 0 && (
         <SourceList sources={displaySources} messageId={message.id} />
       )}
+
+      {/* Copy button */}
+      <div>
+        <CopyButton text={message.content.replace(/\[\d+\]/g, "").trim()} />
+      </div>
 
       {/* Suggestion pills */}
       {message.suggestions && message.suggestions.length > 0 && (
