@@ -11,7 +11,7 @@ from app.models.chat import ChatMessage
 logger = logging.getLogger(__name__)
 
 HISTORY_TTL = 86400  # 24 hours
-MAX_HISTORY_MESSAGES = 40  # 20 turns
+MAX_HISTORY_MESSAGES = 20  # 10 turns
 
 
 class RedisService:

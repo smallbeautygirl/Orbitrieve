@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 SYSTEM_PROMPT = """\
+/no_think
 You are a routing agent. Your ONLY job is to decide whether web search is needed.
 
 Call the route_decision tool with:
@@ -35,6 +36,7 @@ ROUTE_TOOL: dict = {
 }
 
 DIRECT_ANSWER_SYSTEM = """\
+/no_think
 You are a helpful, concise assistant. Answer the user's question directly and clearly.
 Do not mention searching the web or any tools. Respond in the same language the user used.
 Use **bold** to highlight at most 2–3 key terms or conclusions in your entire response. Do not overuse bold.

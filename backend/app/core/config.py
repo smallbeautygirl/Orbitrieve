@@ -8,11 +8,15 @@ class Settings(BaseSettings):
 
     gemini_api_key: str = ""
     tavily_api_key: str = ""
-    llm_model: str = "gemini-2.0-flash"
+    llm_api_key: str = ""
+    llm_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    llm_model: str = "gemini-2.5-flash-lite"
     redis_url: str = "redis://localhost:6379"
     cors_origins: list[str] = ["http://localhost:5173"]
     port: int = 8000
     log_level: str = "INFO"
+    tavily_max_results: int = 8
+    tavily_score_threshold: float = 0.3
 
 
 settings = Settings()

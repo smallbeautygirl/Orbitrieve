@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _openai_client = AsyncOpenAI(
-    api_key=settings.gemini_api_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    max_retries=0,
+    api_key=settings.llm_api_key or settings.gemini_api_key,
+    base_url=settings.llm_base_url,
+    max_retries=2,
 )
 _tavily_service = TavilyService()
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.models.chat import Source
 
 SYSTEM_PROMPT_TEMPLATE = """\
+/no_think
 You are a research assistant. Answer the user's question using ONLY the provided search results.
 
 Rules:
