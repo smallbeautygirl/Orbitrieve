@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 
@@ -109,4 +110,36 @@ class OrchestratorAgent:
             logger.debug("Orchestrator direct answer", extra={"answer": full_answer})
         except Exception as e:
             raise AgentError("Orchestrator direct answer failed") from e
+
+        suggestions = await self._generate_suggestions(message, full_answer)
+        yield json.dumps({"type": "suggestions", "suggestions": suggestions})
         yield json.dumps({"type": "done"})
+
+    async def _generate_suggestions(self, question: str, answer: str) -> list[str]:
+        prompt = (
+            "/no_think\n"
+            "Based on this Q&A, write exactly 2 short follow-up questions a curious reader would ask. "
+            "Output only the 2 questions, one per line, no numbering, no extra text.\n\n"
+            f"Q: {question}\nA: {answer[:500]}"
+        )
+        try:
+            response = await self._client.chat.completions.create(
+                model=settings.llm_model,
+                max_tokens=120,
+                messages=[{"role": "user", "content": prompt}],
+                stream=False,
+            )
+            content = response.choices[0].message.content or ""
+            content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
+            lines = [
+                line.strip()
+                for line in content.strip().splitlines()
+                if line.strip()
+                and ("?" in line or "？" in line)
+                and len(line.strip()) <= 60
+            ]
+            logger.debug("Generated suggestions", extra={"suggestions": lines[:2]})
+            return lines[:2]
+        except Exception:
+            logger.warning("Failed to generate follow-up suggestions")
+            return []

@@ -3,6 +3,7 @@ import type { Message, Stage } from "../types/chat";
 import { MessageBubble } from "./MessageBubble";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 import { theme } from "../styles/theme";
+import { useChatStore } from "../store/chatStore";
 
 interface MessageListProps {
   messages: Message[];
@@ -16,6 +17,7 @@ export function MessageList({
   onSuggestionSelect,
 }: MessageListProps): JSX.Element {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const isLoading = useChatStore((s) => s.isLoading);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,10 +49,11 @@ export function MessageList({
           <span>Ask me anything — I'll search the web when needed.</span>
         </div>
       )}
-      {messages.map((m) => (
+      {messages.map((m, idx) => (
         <MessageBubble
           key={m.id}
           message={m}
+          isStreaming={isLoading && idx === messages.length - 1 && m.role === "assistant"}
           onSuggestionSelect={onSuggestionSelect}
         />
       ))}

@@ -8,6 +8,7 @@ import { OrbitrieveIcon } from "./OrbitrieveIcon";
 
 interface MessageBubbleProps {
   message: Message;
+  isStreaming?: boolean;
   onSuggestionSelect: (text: string) => void;
 }
 
@@ -132,6 +133,7 @@ function CopyButton({ text }: { text: string }): JSX.Element {
 
 export function MessageBubble({
   message,
+  isStreaming = false,
   onSuggestionSelect,
 }: MessageBubbleProps): JSX.Element {
   const isUser = message.role === "user";
@@ -161,7 +163,7 @@ export function MessageBubble({
           >
             {message.content}
           </div>
-          <CopyButton text={message.content} />
+          {!isStreaming && <CopyButton text={message.content} />}
         </div>
       </div>
     );
@@ -216,9 +218,11 @@ export function MessageBubble({
       )}
 
       {/* Copy button */}
-      <div>
-        <CopyButton text={message.content.replace(/\[\d+\]/g, "").trim()} />
-      </div>
+      {!isStreaming && (
+        <div>
+          <CopyButton text={message.content.replace(/\[\d+\]/g, "").trim()} />
+        </div>
+      )}
 
       {/* Suggestion pills */}
       {message.suggestions && message.suggestions.length > 0 && (
