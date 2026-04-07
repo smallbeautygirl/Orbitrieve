@@ -1,6 +1,6 @@
 import type { ChatRequest, SSEEvent } from '../types/chat'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export async function* streamChat(req: ChatRequest): AsyncGenerator<SSEEvent> {
   const response = await fetch(`${BASE_URL}/api/chat`, {

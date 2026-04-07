@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import type { Message, Stage } from '../types/chat';
-import { MessageBubble } from './MessageBubble';
-import { ThinkingIndicator } from './ThinkingIndicator';
-import { theme } from '../styles/theme';
+import { useEffect, useRef } from "react";
+import type { Message, Stage } from "../types/chat";
+import { MessageBubble } from "./MessageBubble";
+import { ThinkingIndicator } from "./ThinkingIndicator";
+import { theme } from "../styles/theme";
 
 interface MessageListProps {
   messages: Message[];
@@ -10,44 +10,52 @@ interface MessageListProps {
   onSuggestionSelect: (text: string) => void;
 }
 
-export function MessageList({ messages, currentStage, onSuggestionSelect }: MessageListProps): JSX.Element {
+export function MessageList({
+  messages,
+  currentStage,
+  onSuggestionSelect,
+}: MessageListProps): JSX.Element {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, currentStage]);
 
   return (
     <div
       style={{
         flex: 1,
-        overflowY: 'auto',
-        padding: '24px 0',
+        overflowY: "auto",
+        padding: "24px 500px",
         backgroundColor: theme.colors.bg,
       }}
     >
       {messages.length === 0 && (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
             color: theme.colors.textDim,
-            fontSize: '14px',
-            gap: '8px',
+            fontSize: "14px",
+            gap: "8px",
           }}
         >
-          <span style={{ fontSize: '32px' }}>🔍</span>
+          <span style={{ fontSize: "32px" }}>🔍</span>
           <span>Ask me anything — I'll search the web when needed.</span>
         </div>
       )}
       {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} onSuggestionSelect={onSuggestionSelect} />
+        <MessageBubble
+          key={m.id}
+          message={m}
+          onSuggestionSelect={onSuggestionSelect}
+        />
       ))}
       {currentStage && (
-        <div style={{ padding: '0 30px' }}>
+        <div style={{ padding: "0 30px" }}>
           <ThinkingIndicator stage={currentStage} />
         </div>
       )}

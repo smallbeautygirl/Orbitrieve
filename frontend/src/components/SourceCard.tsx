@@ -3,9 +3,10 @@ import { theme } from '../styles/theme';
 
 interface SourceCardProps {
   source: Source;
+  messageId: string;
 }
 
-export function SourceCard({ source }: SourceCardProps): JSX.Element {
+export function SourceCard({ source, messageId }: SourceCardProps): JSX.Element {
   const domain = (() => {
     try {
       return new URL(source.url).hostname.replace('www.', '');
@@ -18,7 +19,7 @@ export function SourceCard({ source }: SourceCardProps): JSX.Element {
 
   return (
     <a
-      id={`source-card-${source.index}`}
+      id={`source-card-${messageId}-${source.index}`}
       href={source.url}
       target="_blank"
       rel="noopener noreferrer"

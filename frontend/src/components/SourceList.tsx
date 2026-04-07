@@ -3,9 +3,10 @@ import { SourceCard } from './SourceCard';
 
 interface SourceListProps {
   sources: Source[];
+  messageId: string;
 }
 
-export function SourceList({ sources }: SourceListProps): JSX.Element {
+export function SourceList({ sources, messageId }: SourceListProps): JSX.Element {
   return (
     <div
       style={{
@@ -16,7 +17,7 @@ export function SourceList({ sources }: SourceListProps): JSX.Element {
       }}
     >
       {sources.map((source) => (
-        <SourceCard key={source.index} source={source} />
+        <SourceCard key={source.index} source={source} messageId={messageId} />
       ))}
     </div>
   );
