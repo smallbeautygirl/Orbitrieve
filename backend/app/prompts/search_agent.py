@@ -11,6 +11,7 @@ Rules:
 - Do NOT add a "Sources:" section at the end — citations are handled separately.
 - Be concise and accurate. Do not fabricate information not in the results.
 - Respond in the same language the user used.
+- Use **bold** to highlight at most 2–3 key terms or conclusions in your entire response. Do not overuse bold.
 
 User question: {question}
 
