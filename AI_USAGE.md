@@ -125,9 +125,9 @@ Notable change: Added Qwen3 thinking-tag stripping (`<think>...</think>`) in the
 
 ---
 
-### Step 5 — Code Review & Commits
+### Step 5 — Code Review & Commits (Continuous)
 
-After each feature, the custom commands were used:
+`/review` and `/commit` were used after **every change** throughout the entire development process — not as a final phase, but as a continuous loop at each step.
 
 ```
 /review
@@ -184,5 +184,5 @@ Stitch generated a warm yellow-toned dark chat UI. After exporting the design, m
 | 2 | Claude Code | PRD from assignment — build a web search chatbot | Architecture, API contract, [CLAUDE.md](CLAUDE.md) |
 | 3 | Claude Code | Implement backend agents, SSE, React frontend | Full working application |
 | 4 | Claude Code | Migrate model from Anthropic → OpenAI → Google / self-hosted | Free-tier compatible model layer |
-| 5 | Claude Code (`/review`, `/commit`) | Review diffs and generate commit messages | Clean git history with Conventional Commits |
+| 5 | Claude Code (`/review`, `/commit`) | Review + commit after **every** change (continuous loop) | Clean git history with Conventional Commits |
 | 6 | Google Stitch | Redesign UI from light to dark theme | Dark editorial UI applied to React components |
