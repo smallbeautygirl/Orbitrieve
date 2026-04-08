@@ -186,3 +186,12 @@ Stitch generated a warm yellow-toned dark chat UI. After exporting the design, m
 | 4 | Claude Code | Migrate model from Anthropic → OpenAI → Google / self-hosted | Free-tier compatible model layer |
 | 5 | Claude Code (`/review`, `/commit`) | Review + commit after **every** change (continuous loop) | Clean git history with Conventional Commits |
 | 6 | Google Stitch | Redesign UI from light to dark theme | Dark editorial UI applied to React components |
+
+---
+
+## Copyright & Terms of Use
+
+- **Claude Code (Anthropic)** — Used in accordance with [Anthropic's Usage Policy](https://www.anthropic.com/legal/usage-policy). AI-generated code has been reviewed and modified by the developer.
+- **Google Stitch** — Used in accordance with [Google's Terms of Service](https://policies.google.com/terms). Generated designs were exported and manually adapted into the project.
+- **Tavily Search API** — Search results are used in accordance with [Tavily's Terms of Service](https://tavily.com/terms). Results are surfaced to users with source citations and are not stored or redistributed.
+- **Project scope** — This project was developed for academic assignment purposes only and is not intended for commercial use.
