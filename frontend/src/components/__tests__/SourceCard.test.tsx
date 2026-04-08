@@ -11,22 +11,22 @@ const source = {
 
 describe('SourceCard', () => {
   it('renders the source title', () => {
-    render(<SourceCard source={source} />);
+    render(<SourceCard source={source} messageId="msg-1" />);
     expect(screen.getByText('Reuters Finance')).toBeInTheDocument();
   });
 
   it('renders SOURCE 1 label', () => {
-    render(<SourceCard source={source} />);
+    render(<SourceCard source={source} messageId="msg-1" />);
     expect(screen.getByText('Source 1')).toBeInTheDocument();
   });
 
   it('renders the domain as meta text', () => {
-    render(<SourceCard source={source} />);
+    render(<SourceCard source={source} messageId="msg-1" />);
     expect(screen.getByText('reuters.com')).toBeInTheDocument();
   });
 
   it('renders a link with noopener noreferrer', () => {
-    render(<SourceCard source={source} />);
+    render(<SourceCard source={source} messageId="msg-1" />);
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     expect(link).toHaveAttribute('target', '_blank');
